@@ -9,7 +9,7 @@ class WishlistProvider with ChangeNotifier {
   LoadingStatus _status = LoadingStatus.initial;
   List<WishItem> _wishlist = [];
   String _errorMessage = '';
-  WishSortBy _sortBy = WishSortBy.dateAdded;
+  WishSortBy _sortBy = WishSortBy.dateAdded; // поточний критерій сортування
   WishStatus? _filterStatus;
 
   LoadingStatus get status => _status;
@@ -34,7 +34,6 @@ class WishlistProvider with ChangeNotifier {
     return filtered.toList();
   }
 
-  // --- Static/Hardcoded Data: ОНОВЛЕНО ---
   final List<WishItem> _hardcodedData = [
     WishItem(
       id: '1',
@@ -43,7 +42,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Vehicle',
       cost: 50000.0,
       dateAdded: DateTime(2025, 9, 28),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '2',
@@ -52,7 +51,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Electronics',
       cost: 3500.0,
       dateAdded: DateTime(2025, 10, 15),
-      status: WishStatus.purchased,
+      status: WishStatus.Purchased,
     ),
     WishItem(
       id: '3',
@@ -61,7 +60,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Travel',
       cost: 4500.0,
       dateAdded: DateTime(2025, 11, 1),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '4',
@@ -70,7 +69,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Vehicle',
       cost: 800.0,
       dateAdded: DateTime(2025, 11, 20),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '5',
@@ -79,7 +78,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Electronics',
       cost: 1500.0,
       dateAdded: DateTime(2025, 11, 25),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '6',
@@ -88,7 +87,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Home Goods',
       cost: 1200.0,
       dateAdded: DateTime(2025, 12, 1),
-      status: WishStatus.purchased,
+      status: WishStatus.Purchased,
     ),
     WishItem(
       id: '7',
@@ -97,7 +96,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Travel',
       cost: 2500.0,
       dateAdded: DateTime(2025, 12, 10),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '8',
@@ -106,7 +105,7 @@ class WishlistProvider with ChangeNotifier {
       category: 'Electronics',
       cost: 2200.0,
       dateAdded: DateTime(2025, 12, 15),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
     WishItem(
       id: '9',
@@ -115,11 +114,10 @@ class WishlistProvider with ChangeNotifier {
       category: 'Accessories',
       cost: 450.0,
       dateAdded: DateTime(2025, 12, 18),
-      status: WishStatus.wanted,
+      status: WishStatus.Wanted,
     ),
   ];
 
-  // --- Methods for loading/error simulation (Task 2) ---
 
   Future<void> loadWishlist({bool shouldFail = false}) async {
     _status = LoadingStatus.loading;

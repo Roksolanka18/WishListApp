@@ -14,10 +14,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    // Запускаємо завантаження при вході на екран
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<NotificationProvider>(context, listen: false).loadNotifications();
-      // Для тестування помилки (Task 2b):
+      // для тестування помилки:
       // Provider.of<NotificationProvider>(context, listen: false).loadNotifications(shouldFail: true);
     });
   }
@@ -110,7 +109,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         style: const TextStyle(color: Colors.black54),
       ),
       onTap: () {
-        // Handle notification tap
+        // обробка натискання на повідомлення
       },
     );
   }

@@ -3,18 +3,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:provider/provider.dart'; // <--- Додано Provider
+import 'package:provider/provider.dart'; 
 import 'firebase_options.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/main_screen.dart';
-import 'screens/profile_screen.dart'; // <--- Новий екран
-import 'screens/notifications_screen.dart'; // <--- Новий екран
-import 'screens/wish_item_details_screen.dart'; // <--- Новий екран
-import 'providers/wishlist_provider.dart'; // <--- Провайдер
-import 'providers/notification_provider.dart'; // <--- Провайдер
+import 'screens/profile_screen.dart'; 
+import 'screens/notifications_screen.dart'; 
+import 'screens/wish_item_details_screen.dart'; 
+import 'providers/wishlist_provider.dart'; 
+import 'providers/notification_provider.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,13 +30,12 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(err, stack);
     return true;};
 
-  // Обгортаємо застосунок у MultiProvider для надання стану
+  // обгортаємо застосунок у MultiProvider для надання стану
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        // Додайте інші провайдери тут
       ],
       child: const MyApp(),
     ),
@@ -62,9 +61,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
-        '/profile': (context) => const ProfileScreen(), // <--- Додано маршрут
-        '/notifications': (context) => const NotificationsScreen(), // <--- Додано маршрут
-        '/wish_details': (context) => const WishItemDetailsScreen(), // <--- Додано маршрут
+        '/profile': (context) => const ProfileScreen(), 
+        '/notifications': (context) => const NotificationsScreen(), 
+        '/wish_details': (context) => const WishItemDetailsScreen(), 
       },
     );
   }

@@ -14,14 +14,13 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Видалено: Заголовок та стрілка назад ---
-            const SizedBox(height: 40), // Збільшено відступ
+            const SizedBox(height: 40), 
 
             Center(
               child: Column(
                 children: [
                   const CircleAvatar(
-                    radius: 60, // Збільшено розмір фото
+                    radius: 80, 
                     backgroundColor: Color(0xFFF7EAF0),
                     child: Icon(Icons.person, size: 60, color: Color(0xFFF72585)),
                   ),
@@ -46,7 +45,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // --- Account Section ---
             const Text(
               "Account",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -62,7 +60,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // --- Settings Section ---
             const Text(
               "Settings",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -84,7 +81,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // --- Log Out Button ---
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

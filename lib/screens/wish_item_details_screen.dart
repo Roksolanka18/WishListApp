@@ -10,10 +10,8 @@ class WishItemDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final itemId = ModalRoute.of(context)?.settings.arguments as String?;
     
-    // Find the item using the provider's hardcoded data for simplicity
     final item = context.read<WishlistProvider>().wishlist.firstWhere(
       (i) => i.id == itemId,
-      // Provide a fallback in case the item isn't found
       orElse: () => WishItem(
         id: '',
         title: 'Not Found',
@@ -24,7 +22,6 @@ class WishItemDetailsScreen extends StatelessWidget {
       ),
     );
 
-    // TextControllers for editable fields (static form for now)
     final titleController = TextEditingController(text: item.title);
     final descriptionController = TextEditingController(text: item.description);
     final categoryController = TextEditingController(text: item.category);
@@ -58,37 +55,31 @@ class WishItemDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // --- Title ---
               const Text("Title", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(titleController, "Enter title"),
               const SizedBox(height: 20),
 
-              // --- Description ---
               const Text("Description", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(descriptionController, "Enter description", maxLines: 5),
               const SizedBox(height: 20),
 
-              // --- Category ---
               const Text("Category", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(categoryController, "Enter category"),
               const SizedBox(height: 20),
 
-              // --- Cost ---
               const Text("Cost", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(costController, "Enter cost"),
               const SizedBox(height: 20),
 
-              // --- Status ---
               const Text("Status", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(statusController, "Set status (e.g., wanted, purchased)"),
               const SizedBox(height: 30),
 
-              // --- Buttons ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -97,7 +88,7 @@ class WishItemDetailsScreen extends StatelessWidget {
                     height: 54,
                     child: OutlinedButton(
                       onPressed: () {
-                        // Edit functionality (static for now)
+                        // edit functionality (static for now)
                       },
                       style: OutlinedButton.styleFrom(
                         backgroundColor: const Color(0xFFF7EAF0),
@@ -121,8 +112,8 @@ class WishItemDetailsScreen extends StatelessWidget {
                     height: 54,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Save functionality (static for now)
-                        Navigator.pop(context); // Go back after saving
+                        // save functionality (static for now)
+                        Navigator.pop(context); // go back after saving
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF72585),
@@ -138,7 +129,7 @@ class WishItemDetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 80), // Space for bottom nav bar
+              const SizedBox(height: 80), 
             ],
           ),
         ),

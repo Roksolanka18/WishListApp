@@ -1,4 +1,4 @@
-enum WishStatus { wanted, purchased }
+enum WishStatus { Wanted, Purchased }
 
 class WishItem {
   final String id;
@@ -16,6 +16,6 @@ class WishItem {
     required this.category,
     required this.cost,
     required this.dateAdded,
-    this.status = WishStatus.wanted,
+    this.status = WishStatus.Wanted,
   });
 }

@@ -13,21 +13,20 @@ class NotificationProvider with ChangeNotifier {
   List<NotificationItem> get notifications => _notifications;
   String get errorMessage => _errorMessage;
 
-  // --- Static/Hardcoded Data: ОНОВЛЕНО ---
   final List<NotificationItem> _hardcodedData = [
     NotificationItem(
       id: '1',
-      title: 'New Feature',
-      message: 'We\'ve added a new feature to help you organize your wishlists.',
-      timeAgo: '3d',
+      title: 'Login attempt',
+      message: 'Unusual login attempt detected from new location.',
+      timeAgo: '10m',
       isRead: false,
     ),
     NotificationItem(
       id: '2',
-      title: 'Welcome!',
-      message: 'Thanks for joining our Wishlist App community.',
-      timeAgo: '1w',
-      isRead: true,
+      title: 'New Feature',
+      message: 'We\'ve added a new feature to help you organize your wishlists.',
+      timeAgo: '3h',
+      isRead: false,
     ),
     NotificationItem(
       id: '3',
@@ -40,7 +39,7 @@ class NotificationProvider with ChangeNotifier {
       id: '4',
       title: 'Item Purchased',
       message: 'Great news! Your "New Laptop" item has been marked as purchased.',
-      timeAgo: '5h',
+      timeAgo: '3d',
       isRead: true,
     ),
     NotificationItem(
@@ -48,25 +47,24 @@ class NotificationProvider with ChangeNotifier {
       title: 'App Maintenance',
       message: 'Scheduled maintenance will occur on Jan 5th, 2026.',
       timeAgo: '2h',
-      isRead: false,
+      isRead: true,
     ),
     NotificationItem(
       id: '6',
-      title: 'Login attempt',
-      message: 'Unusual login attempt detected from new location.',
-      timeAgo: '10m',
-      isRead: false,
+      title: 'Welcome!',
+      message: 'Thanks for joining our Wishlist App community.',
+      timeAgo: '1w',
+      isRead: true,
     ),
   ];
 
-  // --- Methods for loading/error simulation (Task 2) ---
 
   Future<void> loadNotifications({bool shouldFail = false}) async {
     _status = LoadingStatus.loading;
     _errorMessage = '';
-    notifyListeners();
+    notifyListeners(); // сповіщає всі віджети в інтерфейсі, які "слухають" цей провайдер
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1)); // імітує затримку, яка виникає при реальному завантаженні даних
 
     if (shouldFail) {
       _status = LoadingStatus.error;
@@ -75,10 +73,10 @@ class NotificationProvider with ChangeNotifier {
       _status = LoadingStatus.loaded;
       _notifications = _hardcodedData;
     }
-    notifyListeners();
+    notifyListeners(); // повідомляє UI про завершення асинхронної операції
   }
 
   void markAsRead(String id) {
-    // Logic to mark as read
+    // реалізувати пізніше
   }
 }

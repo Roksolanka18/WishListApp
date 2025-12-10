@@ -24,8 +24,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // реєструє функцію, яка буде виконана один раз одразу після того, як віджет буде повністю побудований та відображений на екрані
       if (_selectedIndex == 0) {
-        Provider.of<WishlistProvider>(context, listen: false).loadWishlist();
+        Provider.of<WishlistProvider>(context, listen: false).loadWishlist(); // використовується для доступу до екземпляра WishlistProvider
       }
     });
   }
@@ -51,15 +52,13 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// --- Wishlist Content Widget ---
 class WishlistContent extends StatelessWidget {
   const WishlistContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WishlistProvider>(
+    return Consumer<WishlistProvider>( // віджет, який підписує своє піддерево на зміни у WishlistProvider
       builder: (context, provider, child) {
-        // Логіка відображення стану (Task 2)
         Widget content;
         if (provider.status == LoadingStatus.loading) {
           content = const Center(child: CircularProgressIndicator());
@@ -72,7 +71,7 @@ class WishlistContent extends StatelessWidget {
             child: Text("Your wishlist is empty."),
           );
         } else {
-          // Успішно завантажені дані
+          // успішно завантажені дані
           content = Expanded(
             child: ListView.builder(
               itemCount: provider.filteredWishlist.length,
@@ -108,23 +107,21 @@ class WishlistContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Status Cards 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _statusCard(
                         Icons.favorite, 
-                        "${provider.filteredWishlist.where((i) => i.status == WishStatus.wanted).length} wanted"
+                        "${provider.filteredWishlist.where((i) => i.status == WishStatus.Wanted).length} wanted"
                     ),
                     _statusCard(
                         Icons.shopping_bag, 
-                        "${provider.filteredWishlist.where((i) => i.status == WishStatus.purchased).length} purchased"
+                        "${provider.filteredWishlist.where((i) => i.status == WishStatus.Purchased).length} purchased"
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
 
-                // Search/Filter/Sort Row
                 Row(
                   children: [
                     Expanded(
@@ -142,13 +139,11 @@ class WishlistContent extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Filter Button
                     _filterSortButton(
                       icon: Icons.filter_list,
                       onPressed: () => _showFilterDialog(context),
                     ),
                     const SizedBox(width: 8),
-                    // Sort Button
                     _filterSortButton(
                       icon: Icons.sort,
                       onPressed: () => _showSortDialog(context),
@@ -157,7 +152,6 @@ class WishlistContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Item count
                 Text(
                   "${provider.filteredWishlist.length} item${provider.filteredWishlist.length != 1 ? 's' : ''}",
                   style: const TextStyle(
@@ -167,7 +161,6 @@ class WishlistContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
 
-                // List Content (Conditional based on loading status)
                 Expanded(
                   child: provider.status == LoadingStatus.loading || provider.status == LoadingStatus.error
                       ? Center(child: content)
@@ -179,12 +172,11 @@ class WishlistContent extends StatelessWidget {
                         ),
                 ),
                 
-                // Add Button 
+                // add button 
                 Align(
                   alignment: Alignment.bottomRight,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Example to simulate crash
                       throw Exception("Test Crash from Flutter button");
                     },
                     style: ElevatedButton.styleFrom(
@@ -246,17 +238,14 @@ class WishlistContent extends StatelessWidget {
   }
 
   Widget _wishlistItem(BuildContext context, WishItem item) {
-    // 1. Визначаємо, чи елемент придбаний
-    final isPurchased = item.status == WishStatus.purchased;
+    final isPurchased = item.status == WishStatus.Purchased;
 
-    // 2. Встановлюємо динамічні властивості кнопки
-    final buttonColor = isPurchased ? const Color(0xFF9A4D73) : const Color(0xFFF72585);
+    final buttonColor = isPurchased ? const Color(0xFF4CAF50) : const Color(0xFFF72585);
     final buttonText = isPurchased ? "Purchased!" : "Mark as Purchased";
     final onPressedHandler = isPurchased ? null : () { 
-      // Тут буде логіка переходу статусу у "придбано"
+      // тут буде логіка переходу статусу у "придбано"
     };
 
-    // 3. Визначення кольору фону елемента
     Color itemColor = isPurchased ? const Color(0xFFE0FDE0) : const Color(0xFFFDE0EB);
     
     return Container(
@@ -269,7 +258,6 @@ class WishlistContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row 1: Title, Date, and Arrow (для навігації)
           GestureDetector(
             onTap: () {
                 Navigator.pushNamed(context, '/wish_details', arguments: item.id);
@@ -299,23 +287,21 @@ class WishlistContent extends StatelessWidget {
           
           const SizedBox(height: 10),
           
-          // Row 2: Action Buttons
           Row(
             children: [
-              // Mark as Purchased Button (Динамічний)
               Expanded(
                 child: ElevatedButton(
                   onPressed: onPressedHandler,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor, // Динамічний колір
+                    backgroundColor: buttonColor, 
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: isPurchased ? 0 : 2, // Зменшуємо тінь, якщо неактивна
+                    elevation: isPurchased ? 0 : 2, // зменшуємо тінь, якщо неактивна
                   ),
                   child: Text(
-                    buttonText, // Динамічний текст
+                    buttonText, // динамічний текст
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -325,7 +311,6 @@ class WishlistContent extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               
-              // Edit Button (Навігація)
               GestureDetector(
                 onTap: () {
                     Navigator.pushNamed(context, '/wish_details', arguments: item.id);
@@ -342,10 +327,9 @@ class WishlistContent extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               
-              // Delete Button
               GestureDetector(
                 onTap: () {
-                    // Placeholder for actual Delete logic
+                    // placeholder для логіки видалення
                 },
                 child: Container(
                   height: 46,
@@ -364,7 +348,6 @@ class WishlistContent extends StatelessWidget {
     );
   }
 
-  // --- Filter Dialog ---
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -385,19 +368,19 @@ class WishlistContent extends StatelessWidget {
               ),
               ListTile(
                 title: const Text('Wanted'),
-                trailing: context.read<WishlistProvider>().filterStatus == WishStatus.wanted
+                trailing: context.read<WishlistProvider>().filterStatus == WishStatus.Wanted
                     ? const Icon(Icons.check, color: Color(0xFFF72585)) : null,
                 onTap: () {
-                  context.read<WishlistProvider>().setFilter(WishStatus.wanted);
+                  context.read<WishlistProvider>().setFilter(WishStatus.Wanted);
                   Navigator.pop(dialogContext);
                 },
               ),
               ListTile(
                 title: const Text('Purchased'),
-                trailing: context.read<WishlistProvider>().filterStatus == WishStatus.purchased
+                trailing: context.read<WishlistProvider>().filterStatus == WishStatus.Purchased
                     ? const Icon(Icons.check, color: Color(0xFFF72585)) : null,
                 onTap: () {
-                  context.read<WishlistProvider>().setFilter(WishStatus.purchased);
+                  context.read<WishlistProvider>().setFilter(WishStatus.Purchased);
                   Navigator.pop(dialogContext);
                 },
               ),
@@ -408,7 +391,6 @@ class WishlistContent extends StatelessWidget {
     );
   }
 
-  // --- Sort Dialog ---
   void _showSortDialog(BuildContext context) {
     showDialog(
       context: context,
