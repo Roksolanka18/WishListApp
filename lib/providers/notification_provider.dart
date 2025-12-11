@@ -1,82 +1,62 @@
+// lib/providers/notification_provider.dart
 import 'package:flutter/material.dart';
-import 'package:wishlist_app/models/notification_item.dart';
+import '../models/notification_item.dart';
+import '../notification_repository.dart'; // << НОВИЙ ІМПОРТ
 import 'dart:async';
 
+// Використовуємо Вашу назву enum
 enum LoadingStatus { initial, loading, loaded, error }
 
 class NotificationProvider with ChangeNotifier {
+  // Залежність від репозиторію
+  final BaseNotificationRepository _notificationRepository; 
+
   LoadingStatus _status = LoadingStatus.initial;
-  List<NotificationItem> _notifications = [];
-  String _errorMessage = '';
+  List<NotificationItem> _notifications = []; // Тепер дані з Firestore
+  String _errorMessage = ''; // Поле для зберігання повідомлення про помилку
 
-  LoadingStatus get status => _status;
-  List<NotificationItem> get notifications => _notifications;
-  String get errorMessage => _errorMessage;
-
-  final List<NotificationItem> _hardcodedData = [
-    NotificationItem(
-      id: '1',
-      title: 'Login attempt',
-      message: 'Unusual login attempt detected from new location.',
-      timeAgo: '10m',
-      isRead: false,
-    ),
-    NotificationItem(
-      id: '2',
-      title: 'New Feature',
-      message: 'We\'ve added a new feature to help you organize your wishlists.',
-      timeAgo: '3h',
-      isRead: false,
-    ),
-    NotificationItem(
-      id: '3',
-      title: 'Update to Privacy Policy',
-      message: 'Our Privacy Policy has been updated. Please review the changes.',
-      timeAgo: '1d',
-      isRead: false,
-    ),
-    NotificationItem(
-      id: '4',
-      title: 'Item Purchased',
-      message: 'Great news! Your "New Laptop" item has been marked as purchased.',
-      timeAgo: '3d',
-      isRead: true,
-    ),
-    NotificationItem(
-      id: '5',
-      title: 'App Maintenance',
-      message: 'Scheduled maintenance will occur on Jan 5th, 2026.',
-      timeAgo: '2h',
-      isRead: true,
-    ),
-    NotificationItem(
-      id: '6',
-      title: 'Welcome!',
-      message: 'Thanks for joining our Wishlist App community.',
-      timeAgo: '1w',
-      isRead: true,
-    ),
-  ];
-
-
-  Future<void> loadNotifications({bool shouldFail = false}) async {
-    _status = LoadingStatus.loading;
-    _errorMessage = '';
-    notifyListeners(); // сповіщає всі віджети в інтерфейсі, які "слухають" цей провайдер
-
-    await Future.delayed(const Duration(seconds: 1)); // імітує затримку, яка виникає при реальному завантаженні даних
-
-    if (shouldFail) {
-      _status = LoadingStatus.error;
-      _errorMessage = 'Failed to load notifications.';
-    } else {
-      _status = LoadingStatus.loaded;
-      _notifications = _hardcodedData;
-    }
-    notifyListeners(); // повідомляє UI про завершення асинхронної операції
+  // Конструктор, що приймає репозиторій
+  NotificationProvider(this._notificationRepository) {
+    // Автоматичний виклик завантаження при створенні провайдера
+    fetchNotifications(); 
   }
 
-  void markAsRead(String id) {
-    // реалізувати пізніше
+  // Геттери
+  LoadingStatus get status => _status;
+  List<NotificationItem> get notifications => _notifications;
+  String get errorMessage => _errorMessage; // Виправлення помилки
+  int get unreadCount => _notifications.where((n) => !n.isRead).length;
+
+  // --- Методи для роботи з Firebase (Завдання 5) ---
+
+  // Завантаження списку сповіщень
+  Future<void> fetchNotifications() async {
+    _status = LoadingStatus.loading;
+    _errorMessage = '';
+    notifyListeners();
+    
+    try {
+      // Виклик репозиторію для отримання даних з Firestore
+      _notifications = await _notificationRepository.getNotifications();
+      _status = LoadingStatus.loaded;
+    } catch (e) {
+      _status = LoadingStatus.error;
+      _errorMessage = 'Failed to load notifications: ${e.toString()}';
+    }
+    notifyListeners();
+  }
+
+  // Позначити сповіщення як прочитане
+  void markAsRead(String id) async {
+    try {
+      await _notificationRepository.markAsRead(id);
+      
+      // Ручне оновлення списку після зміни даних (компенсація відсутності Stream)
+      await fetchNotifications(); 
+    } catch (e) {
+      _status = LoadingStatus.error;
+      _errorMessage = 'Error marking notification $id as read: ${e.toString()}';
+      notifyListeners();
+    }
   }
 }

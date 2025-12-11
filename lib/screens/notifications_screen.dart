@@ -1,3 +1,4 @@
+// lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
@@ -11,14 +12,25 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  // Constants for styling
+  static const Color primaryPink = Color(0xFFF72585);
+  static const Color softBackground = Color(0xFFF7EAF0);
+
   @override
   void initState() {
     super.initState();
+    // Сповіщення завантажуються в конструкторі провайдера, 
+    // але ми можемо додати load/fetch тут для ручного виклику, якщо потрібно.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<NotificationProvider>(context, listen: false).loadNotifications();
-      // для тестування помилки:
-      // Provider.of<NotificationProvider>(context, listen: false).loadNotifications(shouldFail: true);
+      // Викликаємо fetchNotifications() для ручного оновлення/перезавантаження
+      Provider.of<NotificationProvider>(context, listen: false).fetchNotifications();
     });
+  }
+
+  // Helper method to format date
+  String _formatDate(DateTime date) {
+    // Мінімальний формат: Month/Day
+    return '${date.month}/${date.day}';
   }
 
   @override
@@ -51,27 +63,36 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               const SizedBox(height: 20),
 
               // Consumer для відображення стану
-              Consumer<NotificationProvider>(
-                builder: (context, provider, child) {
-                  if (provider.status == LoadingStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (provider.status == LoadingStatus.error) {
-                    return Center(
-                      child: Text('Error: ${provider.errorMessage}'),
-                    );
-                  } else if (provider.notifications.isEmpty) {
-                    return const Center(child: Text("No new notifications."));
-                  } else {
-                    return Expanded(
-                      child: ListView.builder(
-                        itemCount: provider.notifications.length,
-                        itemBuilder: (context, index) {
-                          return _notificationItem(provider.notifications[index]);
-                        },
-                      ),
-                    );
-                  }
-                },
+              Expanded(
+                child: Consumer<NotificationProvider>(
+                  builder: (context, provider, child) {
+                    final status = provider.status;
+                    final notifications = provider.notifications;
+                    
+                    if (status == LoadingStatus.loading) {
+                      return const Center(child: CircularProgressIndicator(color: primaryPink));
+                    } else if (status == LoadingStatus.error) {
+                      // Виправлення: Використовуємо provider.errorMessage
+                      return Center(
+                        child: Text('Error: ${provider.errorMessage}'),
+                      );
+                    } else if (notifications.isEmpty) {
+                      return const Center(child: Text("No new notifications."));
+                    } else {
+                      // Додаємо RefreshIndicator для ручного оновлення
+                      return RefreshIndicator(
+                        onRefresh: provider.fetchNotifications,
+                        color: primaryPink,
+                        child: ListView.builder(
+                          itemCount: notifications.length,
+                          itemBuilder: (context, index) {
+                            return _buildNotificationItem(context, notifications[index], provider);
+                          },
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),
@@ -80,21 +101,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _notificationItem(NotificationItem item) {
+  Widget _buildNotificationItem(BuildContext context, NotificationItem item, NotificationProvider provider) {
+    final bool isRead = item.isRead;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFFF7EAF0),
+          color: isRead ? Colors.grey.shade200 : softBackground,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(Icons.notifications_none, color: Color(0xFF9A4D73)),
+        child: Icon(
+            isRead ? Icons.notifications_none : Icons.notifications_active, 
+            color: isRead ? Colors.grey : primaryPink
+        ),
       ),
       title: Text(
         item.title,
         style: TextStyle(
-          fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
+          fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
           color: Colors.black87,
         ),
       ),
@@ -104,12 +129,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
+      // Виправлення: Використовуємо item.sentAt з форматуванням
       trailing: Text(
-        item.timeAgo,
+        _formatDate(item.sentAt), 
         style: const TextStyle(color: Colors.black54),
       ),
       onTap: () {
-        // обробка натискання на повідомлення
+        // Обробка натискання: позначити як прочитане
+        if (!isRead) {
+          provider.markAsRead(item.id);
+        }
       },
     );
   }
