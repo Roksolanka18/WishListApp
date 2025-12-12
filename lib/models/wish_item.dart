@@ -1,4 +1,3 @@
-// lib/models/wish_item.dart
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 
 enum WishStatus { Wanted, Purchased }
@@ -28,7 +27,7 @@ class WishItem {
     this.status = WishStatus.Wanted,
   });
 
-  // 1. Метод для читання даних з Firestore
+  // читання даних з Firestore
   factory WishItem.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, [SnapshotOptions? options]) {
     final data = snapshot.data()!;
     return WishItem(
@@ -44,7 +43,7 @@ class WishItem {
     );
   }
 
-  // 2. Метод для запису даних у Firestore
+  // запис даних у Firestore
   Map<String, dynamic> toFirestore() {
     return {
       'title': title,
@@ -56,7 +55,7 @@ class WishItem {
     };
   }
 
-  // Метод для оновлення полів
+  // оновлення полів
   WishItem copyWith({
     String? id,
     String? title,

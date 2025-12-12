@@ -1,4 +1,3 @@
-// lib/providers/wishlist_provider.dart
 import 'package:flutter/material.dart';
 import '../models/wish_item.dart';
 import '../wish_repository.dart';
@@ -16,7 +15,7 @@ class WishListProvider with ChangeNotifier {
   
   WishSortBy _sortBy = WishSortBy.dateAdded; 
   WishStatus? _filterStatus; 
-  String _searchQuery = ''; // << НОВЕ ПОЛЕ ДЛЯ ПОШУКУ (FR8)
+  String _searchQuery = ''; 
 
   WishListProvider(this._wishRepository) {
     fetchWishes(); 
@@ -27,18 +26,15 @@ class WishListProvider with ChangeNotifier {
   String get errorMessage => _errorMessage;
   WishSortBy get sortBy => _sortBy;
   WishStatus? get filterStatus => _filterStatus;
-  String get searchQuery => _searchQuery; // << НОВИЙ ГЕТТЕР
+  String get searchQuery => _searchQuery; 
 
-  // FR8, FR10, FR9: Геттер, який застосовує фільтрування, сортування та ПОШУК
   List<WishItem> get filteredWishlist {
     Iterable<WishItem> filtered = _wishlist;
     
-    // 1. Фільтрування за статусом (FR10)
     if (_filterStatus != null) {
       filtered = filtered.where((item) => item.status == _filterStatus);
     }
     
-    // 2. Фільтрування за пошуковим запитом (FR8)
     if (_searchQuery.isNotEmpty) {
         final query = _searchQuery.toLowerCase();
         filtered = filtered.where((item) => 
@@ -49,7 +45,6 @@ class WishListProvider with ChangeNotifier {
 
     List<WishItem> sorted = filtered.toList();
 
-    // 3. Сортування (FR9)
     switch (_sortBy) {
       case WishSortBy.dateAdded:
         sorted.sort((a, b) => b.dateAdded.compareTo(a.dateAdded)); 
@@ -62,7 +57,6 @@ class WishListProvider with ChangeNotifier {
     return sorted;
   }
   
-  // 4. Завантаження списку даних (Future)
   Future<void> fetchWishes() async {
     _state = WishListState.loading;
     notifyListeners();
@@ -76,7 +70,6 @@ class WishListProvider with ChangeNotifier {
     notifyListeners();
   }
   
-  // Логіка для оновлення UI після CRUD операцій
   Future<void> _refreshListAfterChange(Future<void> operation) async {
       try {
           await operation;
@@ -88,7 +81,7 @@ class WishListProvider with ChangeNotifier {
       }
   }
 
-  // FR7, FR5: Методи CRUD, що викликають оновлення
+  //методи CRUD, що викликають оновлення
   Future<void> toggleWishStatus(String id, WishStatus newStatus) async {
     await _refreshListAfterChange(
         _wishRepository.toggleWishStatus(id, newStatus)
@@ -101,19 +94,16 @@ class WishListProvider with ChangeNotifier {
     );
   }
   
-  // FR10: Метод для встановлення фільтра
   void setFilter(WishStatus? status) {
     _filterStatus = status;
     notifyListeners();
   }
 
-  // FR9: Метод для встановлення критерію сортування
   void setSortBy(WishSortBy sortBy) {
     _sortBy = sortBy;
     notifyListeners();
   }
   
-  // FR8: Метод для встановлення пошукового запиту
   void setSearchQuery(String query) {
       if (_searchQuery != query) {
           _searchQuery = query;

@@ -1,4 +1,3 @@
-// lib/providers/create_edit_wish_provider.dart
 import 'package:flutter/material.dart';
 import '../models/wish_item.dart';
 import '../wish_repository.dart';
@@ -27,7 +26,6 @@ class CreateEditWishProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Завдання 5: Логіка збереження (створення або редагування)
   Future<void> saveWish({
     required String title,
     required String description,
@@ -51,10 +49,8 @@ class CreateEditWishProvider with ChangeNotifier {
       );
 
       if (existingId != null) {
-        // Редагування (FR4)
         await _wishRepository.updateWish(wishToSave.copyWith(id: existingId));
       } else {
-        // Створення (FR3)
         await _wishRepository.addWish(wishToSave); 
       }
 

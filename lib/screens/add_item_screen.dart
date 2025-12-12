@@ -1,4 +1,5 @@
-// lib/screens/add_item_screen.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/create_edit_wish_provider.dart';
@@ -15,12 +16,10 @@ class AddItemScreen extends StatefulWidget {
 class _AddItemScreenState extends State<AddItemScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   
-  // Контролери для полів вводу
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
 
-  // Список категорій
   static const List<String> _categories = [
     'Electronics',
     'Travel',
@@ -33,7 +32,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   
   String? _selectedCategory; 
 
-  // Стилі
+
   static const Color primaryPink = Color(0xFFF72585);
   static const Color softBackground = Color(0xFFF7EAF0);
   static const TextStyle _labelStyle = TextStyle(
@@ -61,7 +60,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   Future<void> _saveNewWish() async {
-    // Валідація форми
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -69,7 +67,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
     final provider = context.read<CreateEditWishProvider>();
     final newCost = double.tryParse(_costController.text.trim());
 
-    // Виклик функції створення (FR3)
     await provider.saveWish(
       existingId: null, 
       title: _titleController.text.trim(),
@@ -80,14 +77,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
       dateAdded: DateTime.now(),
     );
 
-    // Обробка результату
     if (provider.state == CreateEditState.success) {
       _showSnackbar("Wish successfully added!");
       provider.resetState();
       
       Navigator.pop(context); 
       
-      // Оновлюємо список на головній сторінці
+      // оновлюємо список на головній сторінці
       Provider.of<WishListProvider>(context, listen: false).fetchWishes();
 
     } else if (provider.state == CreateEditState.error) {
@@ -114,7 +110,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close), // Закриваючий хрестик
+                      child: const Icon(Icons.close), 
                     ),
                     const SizedBox(width: 12),
                     const Text(
@@ -129,7 +125,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Title Field
                 const Text("Title", style: _labelStyle),
                 const SizedBox(height: 8),
                 _buildTextField(_titleController, "Title", 
@@ -138,13 +133,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Description Field
                 const Text("Description (Optional)", style: _labelStyle),
                 const SizedBox(height: 8),
                 _buildTextField(_descriptionController, "Description (Optional)", maxLines: 5, fillColor: Colors.white),
                 const SizedBox(height: 20),
                 
-                // Category Dropdown
                 const Text("Category", style: _labelStyle),
                 const SizedBox(height: 8),
                 _buildCategoryDropdown(
@@ -159,7 +152,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Cost Field
                 const Text("Cost (Optional)", style: _labelStyle),
                 const SizedBox(height: 8),
                 _buildTextField(
@@ -171,9 +163,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Cancel / Save Row (ВИПРАВЛЕНО: Розміщення кнопок)
                 Row(
-                  // Розміщуємо кнопки по правому краю, як на скріншоті
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
@@ -224,7 +214,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  // --- Helper Widget for Category Dropdown ---
   Widget _buildCategoryDropdown({
     required List<String> categories,
     required void Function(String?) onChanged,
@@ -232,7 +221,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     String? Function(String?)? validator,
   }) {
     return DropdownButtonFormField<String>(
-      value: currentValue, 
+      initialValue: currentValue, 
       items: categories.map((String category) {
         return DropdownMenuItem<String>(
           value: category,
@@ -263,7 +252,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
 
-  // --- Helper Widget for TextFormField ---
   Widget _buildTextField(
     TextEditingController controller, 
     String hint, {

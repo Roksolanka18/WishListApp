@@ -13,22 +13,17 @@ class WishItemDetailsScreen extends StatefulWidget {
 }
 
 class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
-  // Стан для керування режимом редагування
   bool _isEditing = false;
   
-  // Контролери для полів вводу
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _costController;
 
-  // Початковий елемент (містить ID та дату)
   late WishItem _initialItem; 
   
-  // Змінні стану для обраних значень Dropdown
   String? _selectedCategory; 
   String? _selectedStatus; 
 
-  // Списки для Dropdown
   static const List<String> _categories = [
     'Electronics',
     'Travel',
@@ -43,7 +38,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     'Purchased',
   ];
 
-  // Стилі
   static const Color primaryPink = Color(0xFFF72585);
   static const Color softBackground = Color(0xFFF7EAF0);
   static const TextStyle _labelStyle = TextStyle(
@@ -61,7 +55,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     final itemId = ModalRoute.of(context)?.settings.arguments as String?;
     final provider = context.read<WishListProvider>();
     
-    // Знаходимо елемент
     _initialItem = provider.wishlist.firstWhere(
       (i) => i.id == itemId,
       orElse: () => WishItem(
@@ -74,12 +67,10 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
       ),
     );
 
-    // Ініціалізація контролерів
     _titleController = TextEditingController(text: _initialItem.title);
     _descriptionController = TextEditingController(text: _initialItem.description);
     _costController = TextEditingController(text: _initialItem.cost.toString());
 
-    // Ініціалізація обраних значень Dropdown
     _selectedCategory = _initialItem.category;
     _selectedStatus = _initialItem.status.toFirestoreString();
   }
@@ -115,7 +106,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     final newTitle = _titleController.text.trim();
     final newCost = double.tryParse(_costController.text.trim());
 
-    // 1. Валідація
     if (newTitle.isEmpty || newCost == null || newCost < 0) {
       _showSnackbar("Please enter valid Title and Cost.", isError: true);
       return;
@@ -125,32 +115,25 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
       return;
     }
     
-    // Перетворення рядка статусу назад в Enum
     final newStatus = _selectedStatus == 'Purchased' ? WishStatus.Purchased : WishStatus.Wanted;
 
-    // 2. Виклик функції оновлення (Завдання 5, FR4)
     await provider.saveWish(
-      existingId: _initialItem.id, // ID елемента для оновлення
+      existingId: _initialItem.id, 
       title: newTitle,
       description: _descriptionController.text.trim(),
       category: _selectedCategory!, 
       cost: newCost,
       status: newStatus,
-      dateAdded: _initialItem.dateAdded, // Зберігаємо оригінальну дату
+      dateAdded: _initialItem.dateAdded, 
     );
 
-    // 3. Обробка результату
     if (provider.state == CreateEditState.success) {
       _showSnackbar("Wish successfully updated!");
       
-      // >>> ВИПРАВЛЕННЯ: ЕКСПЛІЦИТНИЙ ВИКЛИК ОНОВЛЕННЯ СПИСКУ <<<
-      // Це змушує головний екран перезавантажити дані з Firestore
-      await listProvider.fetchWishes();      // >>> КІНЕЦЬ ВИПРАВЛЕННЯ <<<
-      
+      await listProvider.fetchWishes();      
       setState(() {
-        _isEditing = false; // Вимикаємо режим редагування
+        _isEditing = false; 
       });
-      // Оновлюємо _initialItem для відображення нових даних
       _initialItem = _initialItem.copyWith(
         title: newTitle,
         description: _descriptionController.text.trim(),
@@ -167,16 +150,12 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Прослуховуємо стан CreateEditWishProvider для відображення індикатора
     final createEditState = context.watch<CreateEditWishProvider>().state;
 
-    // Перевіряємо валідність елемента
     final isItemValid = _initialItem.id.isNotEmpty;
-    // Вимикаємо UI під час завантаження
     final isProcessing = createEditState == CreateEditState.loading;
     final isUIEnabled = !isProcessing && isItemValid;
 
-    // Якщо елемент не знайдено, показуємо помилку
     if (!isItemValid) {
         return Scaffold(
             appBar: AppBar(title: const Text("Error")),
@@ -211,7 +190,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Поля вводу
               const Text("Title", style: _labelStyle),
               const SizedBox(height: 8),
               _buildTextField(_titleController, "Enter title", enabled: _isEditing && isUIEnabled),
@@ -222,7 +200,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
               _buildTextField(_descriptionController, "Enter description", maxLines: 5, enabled: _isEditing && isUIEnabled),
               const SizedBox(height: 20),
 
-              // Category Dropdown
               const Text("Category", style: _labelStyle),
               const SizedBox(height: 8),
               _buildCategoryDropdown(
@@ -233,8 +210,8 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
                       _selectedCategory = newValue;
                     });
                   },
-                  enabled: _isEditing && isUIEnabled, // Увімкнено лише в режимі редагування
-                  validator: (v) => v == null || v!.isEmpty ? "Category is required." : null,
+                  enabled: _isEditing && isUIEnabled, 
+                  validator: (v) => v == null ? "Category is required." : null,
               ),
               const SizedBox(height: 20),
 
@@ -243,7 +220,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
               _buildTextField(_costController, "Enter cost", keyboardType: TextInputType.number, enabled: _isEditing && isUIEnabled),
               const SizedBox(height: 20),
 
-              // Status Dropdown
               const Text("Status", style: _labelStyle),
               const SizedBox(height: 8),
               _buildStatusDropdown(
@@ -254,8 +230,8 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
                       _selectedStatus = newValue;
                     });
                   },
-                  enabled: _isEditing && isUIEnabled, // Увімкнено лише в режимі редагування
-                  validator: (v) => v == null || v!.isEmpty ? "Status is required." : null,
+                  enabled: _isEditing && isUIEnabled, 
+                  validator: (v) => v == null ? "Status is required." : null,
               ),
               const SizedBox(height: 30),
 
@@ -269,7 +245,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
                       width: 120,
                       height: 54,
                       child: OutlinedButton(
-                        // LEFT SIDE: Edit Button
                         onPressed: _isEditing || isProcessing ? null : _toggleEditMode, 
                         style: OutlinedButton.styleFrom(
                           backgroundColor: (_isEditing || isProcessing) ? Colors.grey.shade300 : softBackground,
@@ -292,7 +267,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
                       width: 120,
                       height: 54,
                       child: ElevatedButton(
-                        // RIGHT SIDE: Save Button
                         onPressed: _isEditing && !isProcessing ? _saveChanges : null, 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: (_isEditing && !isProcessing) ? primaryPink : Colors.grey.shade400,
@@ -316,7 +290,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     );
   }
 
-  // --- Helper Widget for Category Dropdown ---
   Widget _buildCategoryDropdown({
     required List<String> categories,
     required void Function(String?) onChanged,
@@ -328,7 +301,7 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     final textStyle = TextStyle(color: enabled ? Colors.black87 : Colors.black54);
 
     return DropdownButtonFormField<String>(
-      value: currentValue, 
+      initialValue: currentValue, 
       items: categories.map((String category) {
         return DropdownMenuItem<String>(
           value: category,
@@ -364,7 +337,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     );
   }
   
-  // --- Helper Widget for Status Dropdown ---
   Widget _buildStatusDropdown({
     required List<String> statusOptions,
     required void Function(String?) onChanged,
@@ -376,7 +348,7 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
     final textStyle = TextStyle(color: enabled ? Colors.black87 : Colors.black54);
     
     return DropdownButtonFormField<String>(
-      value: currentValue, 
+      initialValue: currentValue, 
       items: statusOptions.map((String status) {
         return DropdownMenuItem<String>(
           value: status,
@@ -413,7 +385,6 @@ class _WishItemDetailsScreenState extends State<WishItemDetailsScreen> {
   }
 
 
-  // --- Helper Widget for TextFormField ---
   Widget _buildTextField(
     TextEditingController controller, 
     String hint, {

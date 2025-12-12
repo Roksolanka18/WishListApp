@@ -8,8 +8,8 @@ import 'wish_repository.dart';
 import 'providers/create_edit_wish_provider.dart'; 
 import 'notification_repository.dart'; 
 import 'user_repository.dart'; 
-import 'auth_repository.dart';// << НОВИЙ ІМПОРТ
-import 'storage_repository.dart'; // << ІМПОРТ STORAGE
+import 'auth_repository.dart';
+import 'storage_repository.dart'; 
 
 import 'screens/login_screen.dart';
 import 'screens/welcome_screen.dart';
@@ -34,33 +34,33 @@ void main() async {
   final notificationRepository = NotificationRepository();
   final userRepository = UserRepository(); 
   final authRepository = AuthRepository(); 
-  final storageRepository = StorageRepository(); // << ІНІЦІАЛІЗАЦІЯ STORAGE
+  final storageRepository = StorageRepository(); 
 
   runApp(
     MultiProvider(
       providers: [
-        // 1. Реєстрація репозиторіїв
+        // реєстрація репозиторіїв
         Provider<BaseWishRepository>(create: (_) => wishRepository),
         Provider<BaseNotificationRepository>(create: (_) => notificationRepository), 
         Provider<UserRepository>(create: (_) => userRepository), 
         Provider<AuthRepository>(create: (_) => authRepository),
-        Provider<StorageRepository>(create: (_) => storageRepository), // << РЕЄСТРАЦІЯ STORAGE
+        Provider<StorageRepository>(create: (_) => storageRepository), 
 
-        // 2. Реєстрація провайдерів
+        // реєстрація провайдерів
         ChangeNotifierProvider(
-          create: (_) => WishListProvider(wishRepository), // Завдання 4, 5 (Список)
+          create: (_) => WishListProvider(wishRepository), 
         ),
         ChangeNotifierProvider(
-          create: (_) => CreateEditWishProvider(wishRepository), // Завдання 5 (Форма)
+          create: (_) => CreateEditWishProvider(wishRepository), 
         ),
         ChangeNotifierProvider(
-          create: (_) => NotificationProvider(notificationRepository), // Завдання 5 (Сповіщення)
+          create: (_) => NotificationProvider(notificationRepository), 
         ),
         ChangeNotifierProvider(
-          create: (_) => AppUserProvider(userRepository, storageRepository), // Завдання 6 (Профіль)
+          create: (_) => AppUserProvider(userRepository, storageRepository), 
         ),
       ],
-      child: MyApp(), // Ваш головний віджет
+      child: MyApp(), 
     ),
   );
 }

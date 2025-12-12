@@ -4,7 +4,7 @@ class AppUser {
   final String uid;
   final String email;
   final String? name; 
-  final String? profilePictureUrl; // << ДОДАНО
+  final String? profilePictureUrl; 
 
   AppUser({
     required this.uid,
@@ -19,7 +19,7 @@ class AppUser {
       uid: snapshot.id,
       email: data['email'] as String,
       name: data['name'] as String?,
-      profilePictureUrl: data['profile_picture_url'] as String?, // << ДОДАНО
+      profilePictureUrl: data['profile_picture_url'] as String?, 
     );
   }
 
@@ -27,7 +27,7 @@ class AppUser {
     return {
       'email': email,
       if (name != null) 'name': name,
-      if (profilePictureUrl != null) 'profile_picture_url': profilePictureUrl, // << ДОДАНО
+      if (profilePictureUrl != null) 'profile_picture_url': profilePictureUrl, 
     };
   }
 

@@ -1,9 +1,10 @@
-// lib/screens/edit_profile_screen.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_user_provider.dart';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart'; // << ДОДАНО
+import 'package:cached_network_image/cached_network_image.dart'; 
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,7 +16,6 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   
-  // Контролери для окремих полів
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   
@@ -26,14 +26,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     
-    // Отримання початкових даних з провайдера
+    // отримання початкових даних з провайдера
     final user = Provider.of<AppUserProvider>(context, listen: false).user;
     final fullName = user?.name ?? 'User';
     
-    // 🟢 Логіка розділення імені та прізвища (для ініціалізації полів)
     List<String> parts = fullName.trim().split(' ');
     String firstName = parts.isNotEmpty ? parts[0] : '';
-    // Якщо є більше одного слова, вважаємо решту прізвищем
     String lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
     
     _firstNameController = TextEditingController(text: firstName);
@@ -62,19 +60,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     
     final provider = context.read<AppUserProvider>();
     
-    // 1. Об'єднання імені та прізвища (ВИМОГА КОРИСТУВАЧА)
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    // Об'єднуємо обидва поля в єдиний рядок для збереження у полі 'name'
     final combinedName = (firstName + ' ' + lastName).trim();
 
-    // 2. Виклик функції збереження
+    // виклик функції збереження
     await provider.saveProfileChanges(newName: combinedName);
 
-    // 3. Обробка результату
     if (provider.editState == ProfileEditState.success) {
       _showSnackbar("Profile successfully updated!");
-      // Після успішного збереження повертаємося на сторінку профілю
       Navigator.pop(context); 
     } else if (provider.editState == ProfileEditState.error) {
       _showSnackbar("Save error: ${provider.errorMessage}", isError: true);
@@ -100,7 +94,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     GestureDetector(
@@ -113,16 +106,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Photo Placeholder (Рис. 8)
                Center(
                   child: Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      // Відображення фото
                       _buildProfilePicture(displayImage, currentPhotoUrl),
                       Positioned(
                         child: GestureDetector(
-                          onTap: provider.pickImage, // Вибір нового фото
+                          onTap: provider.pickImage, 
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
@@ -138,7 +129,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Name Field
                 const Text("Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -149,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Surname Field
+
                 const Text("Surname", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -160,14 +150,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
                 
-                // Email Display (Non-editable)
                 const Text("Email", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                // 🟢 Відображення актуальної пошти
                 Text(user?.email ?? 'N/A', style: const TextStyle(fontSize: 16, color: Colors.black54)),
                 const SizedBox(height: 50),
 
-                // Save Button
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -195,10 +182,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ImageProvider? imageProvider;
     
     if (displayImage != null) {
-      // 1. Вибране нове фото
+      // вибране нове фото
       imageProvider = FileImage(displayImage);
     } else if (currentPhotoUrl != null && currentPhotoUrl.isNotEmpty) {
-      // 2. Існуюче фото з Firebase Storage
+      // існуюче фото з Firebase Storage
       imageProvider = CachedNetworkImageProvider(currentPhotoUrl);
     } 
 

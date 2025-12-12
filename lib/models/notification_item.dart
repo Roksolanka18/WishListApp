@@ -1,4 +1,3 @@
-// lib/models/notification_item.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationItem {
@@ -16,7 +15,6 @@ class NotificationItem {
     this.isRead = false,
   });
 
-  // 1. Конвертація З Firestore-документа
   factory NotificationItem.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data()!;
     return NotificationItem(
@@ -28,7 +26,6 @@ class NotificationItem {
     );
   }
 
-  // 2. Конвертація В Map
   Map<String, dynamic> toFirestore() {
     return {
       'title': title,
